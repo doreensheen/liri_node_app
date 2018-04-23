@@ -24,13 +24,24 @@ if (command === commands[0]) {
 
     // Run my-tweets
     function myTweets() {
-        console.log("my-tweets called")
 
+        // require and get keys for twitter api
+        var Twitter = require('twitter');
         function Twitter(key) {
             this.key = key;
         }
-        
         var client = new Twitter(keys.twitter);
+
+        client.get('statuses/home_timeline', limit=20, function(error, tweets, response) {
+            if(error) throw error;
+            for (i=0;i<20;i++) {
+                console.log("---")
+                console.log("Tweeted by " + tweets[i].user.screen_name);  
+                console.log('"' + tweets[i].text + '"');  
+                console.log("Posted at " + tweets[i].created_at);  
+            }
+          });
+
     }
     // Run spotify-this-song
     function spotifyThisSong(search) {
@@ -81,5 +92,22 @@ if (command === commands[0]) {
     }
     // Run do-what-it-says
     function doWhatItSays() {
-        console.log("do-what-it-says called")
+        var fs = require("fs");
+        fs.readFile("random.txt", "utf8", function(error, data) {
+            if (error) {
+                console.log(error);
+            }
+
+            var inputs = data.split(",");
+            command = inputs[0];
+            search = inputs[1];
+
+            if (command === commands[0]) {
+                myTweets();
+            }else if (command === commands[1]){
+                spotifyThisSong(search);
+            }else if (command === commands[2]){
+                movieThis(search);
+            }
+        })
     }
